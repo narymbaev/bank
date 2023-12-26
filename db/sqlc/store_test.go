@@ -10,13 +10,13 @@ import (
 func TestTransferTx(t *testing.T) {
 	store := NewStore(testDB)
 
-	account1, _ := store.GetAccount(context.Background(), int64(59))
-	account2, _ := store.GetAccount(context.Background(), int64(60))
+	account1 := createRandomAccount(t)
+	account2 := createRandomAccount(t)
 
 	fmt.Println("Balance before transactions ==>> account1: ", account1.Balance, " account2: ", account2.Balance)
 
 	// run n concurrent transfer transactions
-	n := 4
+	n := 10
 	amount := int64(10)
 
 	errs := make(chan error)
@@ -25,11 +25,10 @@ func TestTransferTx(t *testing.T) {
 		fromAccountID := account1.ID
 		toAccountID := account2.ID
 
-		//if i % 2 == 1 {
-		//	fromAccountID = account2.ID
-		//	toAccountID = account1.ID
-		//}
-
+		if i % 2 == 1 {
+			fromAccountID = account2.ID
+			toAccountID = account1.ID
+		}
 
 		go func() {
 			_, err := store.TransferTx(context.Background(), TransferTxParams{
@@ -47,7 +46,7 @@ func TestTransferTx(t *testing.T) {
 		require.NoError(t, err)
 	}
 
-	// TODO: check accountls' balance
+	// check Accounts Balance
 	updatedAccount1, err := store.GetAccount(context.Background(), account1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, updatedAccount1)
