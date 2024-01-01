@@ -2,16 +2,17 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-playground/validator/v10"
 	db "github.com/narymbaev/techschool/db/sqlc"
 )
 
 // Server servers HTTP requests
 type Server struct {
-	store *db.Store
+	store db.Store
 	router *gin.Engine
 }
 
-func NewServer(store *db.Store) *Server {
+func NewServer(store db.Store) *Server {
 	server := &Server{
 		store: store,
 	}
